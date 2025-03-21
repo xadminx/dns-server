@@ -14,7 +14,7 @@ namespace yswery\DNS;
 use React\Datagram\Socket;
 use React\Datagram\SocketInterface;
 use React\EventLoop\LoopInterface;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use yswery\DNS\Config\FileConfig;
 use yswery\DNS\Event\Events;
@@ -294,16 +294,16 @@ class Server
 
     /**
      * @param string     $eventName
-     * @param Event|null $event
+     * @param Event      $event
      *
      * @return Event|null
      */
-    protected function dispatch($eventName, ?Event $event = null): ?Event
+    protected function dispatch($eventName, Event $event): ?Event
     {
         if (null === $this->dispatcher) {
             return null;
         }
 
-        return $this->dispatcher->dispatch($eventName, $event);
+        return $this->dispatcher->dispatch($event, $eventName);
     }
 }

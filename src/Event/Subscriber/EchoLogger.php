@@ -23,7 +23,7 @@ class EchoLogger extends LoggerSubscriber implements LoggerInterface
         $this->setLogger($this);
     }
 
-    public function log($level, $message, array $context = [])
+    public function log($level, $message, array $context = []): void
     {
         echo sprintf('[%s] %s: %s'.PHP_EOL, date('c'), $level, $message);
     }

@@ -54,7 +54,7 @@ abstract class AbstractResolver implements ResolverInterface
     {
         $answers = [];
         foreach ($queries as $query) {
-            $answer = $this->resourceRecords[$query->getName()][$query->getType()][$query->getClass()] ?? [];
+            $answer = $this->findEntry($query);
             if (empty($answer)) {
                 $answer = $this->findWildcardEntry($query);
             }
@@ -137,6 +137,22 @@ abstract class AbstractResolver implements ResolverInterface
 
             $array = &$array[$label];
         }
+    }
+
+    /**
+     * @param ResourceRecord $query
+     *
+     * @return array
+     */
+    protected function findEntry(ResourceRecord $query): array
+    {
+        foreach($this->resourceRecords as $resourceRecordName => $resourceRecord) {
+            if(strtolower($resourceRecordName) == strtolower($query->getName())) {
+                return $this->resourceRecords[$resourceRecordName][$query->getType()][$query->getClass()] ?? [];
+            }
+        }
+
+        return [];
     }
 
     /**
@@ -247,5 +263,10 @@ abstract class AbstractResolver implements ResolverInterface
             default:
                 throw new UnsupportedTypeException(sprintf('Resource Record type "%s" is not a supported type.', RecordTypeEnum::getName($type)));
         }
+    }
+
+    static function array_ikey_exists($key, $haystack)
+    {
+        return array_key_exists(strtolower($key), array_change_key_case($haystack));
     }
 }

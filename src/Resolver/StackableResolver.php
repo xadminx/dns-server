@@ -26,14 +26,14 @@ class StackableResolver implements ResolverInterface
     }
 
     /**
-     * @param ResourceRecord[] $question
+     * @param ResourceRecord[] $queries
      *
      * @return array
      */
-    public function getAnswer(array $question, ?string $client = null): array
+    public function getAnswer(array $queries, ?string $client = null): array
     {
         foreach ($this->resolvers as $resolver) {
-            $answer = $resolver->getAnswer($question);
+            $answer = $resolver->getAnswer($queries, $client);
             if (!empty($answer)) {
                 return $answer;
             }

@@ -172,14 +172,23 @@ class Server
      */
     public function handleQueryFromStream(string $buffer, ?string $client = null): string
     {
-        $message = Decoder::decodeMessage($buffer);
-        $this->dispatch(Events::QUERY_RECEIVE, new QueryReceiveEvent($message));
+        try {
+            $message = Decoder::decodeMessage($buffer);
+            $this->dispatch(Events::QUERY_RECEIVE, new QueryReceiveEvent($message));
 
-        $responseMessage = clone $message;
-        $responseMessage->getHeader()
-            ->setResponse(true)
-            ->setRecursionAvailable($this->resolver->allowsRecursion())
-            ->setAuthoritative($this->isAuthoritative($message->getQuestions()));
+            $responseMessage = clone $message;
+            $responseMessage->getHeader()
+                ->setResponse(true)
+                ->setRecursionAvailable($this->resolver->allowsRecursion())
+                ->setAuthoritative($this->isAuthoritative($message->getQuestions()));
+        } catch (\Exception $e) {
+            $responseMessage
+                ->setAnswers([])
+                ->getHeader()->setRcode(Header::RCODE_SERVER_FAILURE);
+            $this->dispatch(Events::QUERY_RESPONSE, new QueryResponseEvent($responseMessage));
+
+            return Encoder::encodeMessage($responseMessage);
+        }
 
         try {
             $answers = $this->resolver->getAnswer($responseMessage->getQuestions(), $client);

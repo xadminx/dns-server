@@ -182,6 +182,7 @@ class Server
                 ->setRecursionAvailable($this->resolver->allowsRecursion())
                 ->setAuthoritative($this->isAuthoritative($message->getQuestions()));
         } catch (\Exception $e) {
+            $responseMessage = new Message();
             $responseMessage
                 ->setAnswers([])
                 ->getHeader()->setRcode(Header::RCODE_SERVER_FAILURE);

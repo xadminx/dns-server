@@ -181,7 +181,7 @@ class Server
                 ->setResponse(true)
                 ->setRecursionAvailable($this->resolver->allowsRecursion())
                 ->setAuthoritative($this->isAuthoritative($message->getQuestions()));
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             $responseMessage = new Message();
             $responseMessage
                 ->setAnswers([])
